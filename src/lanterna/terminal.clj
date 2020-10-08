@@ -2,69 +2,42 @@
   (:refer-clojure :exclude [flush])
   (:import
    com.googlecode.lanterna.TerminalPosition
+   com.googlecode.lanterna.SGR
    com.googlecode.lanterna.terminal.Terminal
+   com.googlecode.lanterna.terminal.TerminalResizeListener
    com.googlecode.lanterna.terminal.ansi.UnixTerminal
-   com.googlecode.lanterna.terminal.ansi.CygwinTerminal
-   ;; com.googlecode.lanterna.terminal.swing.SwingTerminal
-   ;; com.googlecode.lanterna.terminal.swing.TerminalAppearance
-   ;; java.awt.Font
-   ;; java.awt.GraphicsEnvironment
-   )
+   com.googlecode.lanterna.terminal.ansi.CygwinTerminal)
   (:require
    [lanterna.common :refer [parse-key block-on]]
    [lanterna.constants :as c]))
 
-;; (defn add-resize-listener
-;;   "Create a listener that will call the supplied fn when the terminal is resized.
-
-;;   The function must take two arguments: the new number of columns and the new
-;;   number of rows.
-
-;;   The listener itself will be returned.  You don't need to do anything with it,
-;;   but you can use it to remove it later with remove-resize-listener.
-
-;;   "
-;;   [^Terminal terminal listener-fn]
-;;   (let [listener (reify com.googlecode.lanterna.terminal.Terminal$ResizeListener
-;;                    (onResized [this newSize]
-;;                      (listener-fn (.getColumns newSize)
-;;                                   (.getRows newSize))))]
-;;     (.addResizeListener terminal listener)
-;;     listener))
-
-;; (defn remove-resize-listener
-;;   "Remove a resize listener from the given terminal."
-;;   [^Terminal terminal listener]
-;;   (.removeResizeListener terminal listener))
-
-;; (defn get-available-fonts []
-;;   (set (.getAvailableFontFamilyNames
-;;          (GraphicsEnvironment/getLocalGraphicsEnvironment))))
-
-;; (defn- get-font-name [font]
-;;   (let [fonts (if (coll? font) font [font])
-;;         fonts (concat fonts ["Monospaced"])
-;;         available (get-available-fonts)]
-;;     (first (filter available fonts))))
-
-
-;; (defn- get-swing-terminal [cols rows
-;;                            {:as opts
-;;                             :keys [font font-size palette]
-;;                             :or {font ["Menlo" "Consolas" "Monospaced"]
-;;                                  font-size 14
-;;                                  palette :mac-os-x}}]
-;;   (let [font (get-font-name font)
-;;         appearance (new TerminalAppearance
-;;                         (new Font font Font/PLAIN font-size)
-;;                         (new Font font Font/BOLD font-size)
-;;                         (c/palettes palette) true)]
-;;     (new SwingTerminal appearance cols rows)))
-
-(defn windows? []
+(defn- windows? []
   (-> (System/getProperty "os.name" "")
       (.toLowerCase)
       (.startsWith "windows")))
+
+(defn add-resize-listener
+  "Create a listener that will call the supplied fn when the terminal is resized.
+
+  The function must take two arguments: the new number of columns and the new
+  number of rows.
+
+  The listener itself will be returned.  You don't need to do anything with it,
+  but you can use it to remove it later with remove-resize-listener.
+
+  "
+  [^Terminal terminal listener-fn]
+  (let [listener (reify TerminalResizeListener
+                   (onResized [this terminal newSize]
+                     (listener-fn (.getColumns newSize)
+                                  (.getRows newSize))))]
+    (.addResizeListener terminal listener)
+    listener))
+
+(defn remove-resize-listener
+  "Remove a resize listener from the given terminal."
+  [^Terminal terminal listener]
+  (.removeResizeListener terminal listener))
 
 (defn text-terminal []
   (if (windows?)
@@ -160,18 +133,7 @@
 (defn set-style
   "Enter a style"
   [^Terminal terminal style]
-  (.applySGR terminal (into-array com.googlecode.lanterna.terminal.Terminal$SGR [(c/enter-styles style)])))
-
-(defn remove-style
-  "Exit a style"
-  [^Terminal terminal style]
-  (.applySGR terminal (into-array com.googlecode.lanterna.terminal.Terminal$SGR [(c/exit-styles style)])))
-
-(defn reset-styles
-  "Reset all styles"
-  [^Terminal terminal]
-  (.applySGR terminal (into-array com.googlecode.lanterna.terminal.Terminal$SGR [c/reset-style])))
-
+  (.applySGR terminal (into-array SGR [(c/styles style)])))
 
 (defn get-key
   "Get the next keypress from the user, or nil if none are buffered.
@@ -205,18 +167,3 @@
   ([^Terminal terminal] (get-key-blocking terminal {}))
   ([^Terminal terminal {:keys [interval timeout] :as opts}]
      (block-on get-key [terminal] opts)))
-
-
-;; (comment
-
-;;   (def t (get-terminal :swing
-;;                        {:cols 40 :rows 30
-;;                         :font ["Menlo"]
-;;                         :font-size 24
-;;                         :palette :gnome}))
-;;   (start t)
-;;   (set-fg-color t :yellow)
-;;   (put-string t "Hello, world!")
-;;   (get-key-blocking t {:timeout 1000})
-;;   (get-key-blocking t {:interval 2000})
-;;   (stop t))

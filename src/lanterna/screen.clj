@@ -8,82 +8,30 @@
    [lanterna.constants :as c]
    [lanterna.terminal :as t]))
 
-(defn ^Screen terminal-screen
-  ""
-  [^Terminal terminal]
-  (TerminalScreen. terminal))
-
-(defn enumerate [s]
+(defn- enumerate [s]
   (map vector (iterate inc 0) s))
 
-;; (defn add-resize-listener
-;;   "Create a listener that will call the supplied fn when the screen is resized.
+(defn ^Screen terminal-screen [^Terminal terminal]
+  (TerminalScreen. terminal))
 
-;;   The function must take two arguments: the new number of columns and the new
-;;   number of rows.
+(defn add-resize-listener
+  "Create a listener that will call the supplied fn when the screen is resized.
 
-;;   The listener itself will be returned.  You don't need to do anything with it,
-;;   but you can use it to remove it later with remove-resize-listener.
+  The function must take two arguments: the new number of columns and the new
+  number of rows.
 
-;;   "
-;;   [^Screen screen listener-fn]
-;;   (t/add-resize-listener (.getTerminal screen)
-;;                          listener-fn))
+  The listener itself will be returned.  You don't need to do anything with it,
+  but you can use it to remove it later with remove-resize-listener.
 
-;; (defn remove-resize-listener
-;;   "Remove a resize listener from the given screen."
-;;   [^Screen screen listener]
-;;   (t/remove-resize-listener (.getTerminal screen) listener))
+  "
+  [^Screen screen listener-fn]
+  (t/add-resize-listener (.getTerminal screen)
+                         listener-fn))
 
-;; (defn get-screen
-;;   "Get a screen object.
-
-;;   kind can be one of the following:
-
-;;   :auto   - Try to guess the right type of screen based on OS, whether
-;;             there's a windowing environment, etc
-;;   :swing  - Force a Swing-based screen.
-;;   :text   - Force a console (i.e.: non-Swing) screen.  Try to guess the
-;;             appropriate kind of console (UNIX/Cygwin) by the OS.
-;;   :unix   - Force a UNIX console screen.
-;;   :cygwin - Force a Cygwin console screen.
-
-;;   Options can contain one or more of the following keys:
-
-;;   :cols    - Width of the desired screen in characters (default 80).
-;;   :rows    - Height of the desired screen in characters (default 24).
-;;   :charset - Charset of the desired screen.  Can be any of
-;;              (keys lanterna.constants/charsets) (default :utf-8).
-;;   :resize-listener - A function to call when the screen is resized.  This
-;;                      function should take two parameters: the new number of
-;;                      columns, and the new number of rows.
-;;   :font      - Font to use.  String or sequence of strings.
-;;                Use (lanterna.terminal/get-available-fonts) to see your options.
-;;                Will fall back to a basic monospaced font if none of the given
-;;                names are available.
-;;   :font-size - An int of the size of the font to use.
-
-;;   NOTE: The options are really just a suggestion!
-
-;;   The console screen will ignore rows and columns and will be the size of the
-;;   user's window.
-
-;;   The Swing screen will start out at this size but can be resized later by the
-;;   user, and will ignore the charset entirely.
-
-;;   God only know what Cygwin will do.
-
-;;   "
-;;   ([] (get-screen :auto {}))
-;;   ([kind] (get-screen kind {}))
-;;   ([kind {:as opts
-;;           :keys [cols rows charset resize-listener]
-;;           :or {cols 80
-;;                rows 24
-;;                charset :utf-8
-;;                resize-listener nil}}]
-;;    (new Screen (t/get-terminal kind opts))))
-
+(defn remove-resize-listener
+  "Remove a resize listener from the given screen."
+  [^Screen screen listener]
+  (t/remove-resize-listener (.getTerminal screen) listener))
 
 (defn start
   "Start the screen.  Consider using in-screen instead.
@@ -306,19 +254,3 @@
   ([^Screen screen] (get-key-blocking screen {}))
   ([^Screen screen {:keys [interval timeout] :as opts}]
      (block-on get-key [screen] opts)))
-
-
-;; ;; (comment
-;; ;;   (def s (get-screen))
-;; ;;   (start s)
-
-;; ;;   (put-sheet s 5 5 ["foo" "bar" "hello"])
-;; ;;   (put-sheet s 5 9 [[\f \o \o] ["b" "a" "r"] "hello"])
-;; ;;   (let [r [\r {:bg :red :fg :white}]
-;; ;;         g [\g {:bg :green :fg :black}]
-;; ;;         b [\b {:bg :blue :fg :white}]]
-;; ;;     (put-sheet s 5 13 [[r r r] [g g g] [b b b]]))
-
-;; ;;   (redraw s)
-;; ;;   (stop s)
-;; ;;   )

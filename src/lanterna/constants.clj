@@ -1,10 +1,8 @@
 (ns lanterna.constants
-  (:import java.nio.charset.Charset
-           com.googlecode.lanterna.input.KeyType
+  (:import com.googlecode.lanterna.SGR
            com.googlecode.lanterna.TextColor$ANSI
-           com.googlecode.lanterna.SGR
-           ;; com.googlecode.lanterna.terminal.swing.TerminalPalette
-           ))
+           com.googlecode.lanterna.input.KeyType
+           java.nio.charset.Charset))
 
 (def charsets {:utf-8 (Charset/forName "UTF-8")})
 
@@ -45,25 +43,8 @@
    KeyType/Unknown :unknown
    KeyType/CursorLocation :cursor-location})
 
-;; (def palettes
-;;   {:gnome      TerminalPalette/GNOME_TERMINAL
-;;    :vga        TerminalPalette/STANDARD_VGA
-;;    :windows-xp TerminalPalette/WINDOWS_XP_COMMAND_PROMPT
-;;    :mac-os-x   TerminalPalette/MAC_OS_X_TERMINAL_APP
-;;    :xterm      TerminalPalette/PUTTY
-;;    :putty      TerminalPalette/XTERM})
-
-;; (def enter-styles
-;;   {:bold com.googlecode.lanterna.terminal.Terminal$SGR/ENTER_BOLD
-;;    :reverse com.googlecode.lanterna.terminal.Terminal$SGR/ENTER_REVERSE
-;;    :blinking com.googlecode.lanterna.terminal.Terminal$SGR/ENTER_BLINK
-;;    :underline com.googlecode.lanterna.terminal.Terminal$SGR/ENTER_UNDERLINE})
-
-;; (def exit-styles
-;;   {:bold com.googlecode.lanterna.terminal.Terminal$SGR/EXIT_BOLD
-;;    :reverse com.googlecode.lanterna.terminal.Terminal$SGR/EXIT_REVERSE
-;;    :blinking com.googlecode.lanterna.terminal.Terminal$SGR/EXIT_BLINK
-;;    :underline com.googlecode.lanterna.terminal.Terminal$SGR/EXIT_UNDERLINE})
-
-;; (def reset-style
-;;   com.googlecode.lanterna.terminal.Terminal$SGR/RESET_ALL)
+(def sgr
+  {:bold com.googlecode.lanterna.SGR/BOLD
+   :reverse com.googlecode.lanterna.SGR/REVERSE
+   :blinking com.googlecode.lanterna.SGR/BLINK
+   :underline com.googlecode.lanterna.SGR/UNDERLINE})

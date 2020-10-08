@@ -1,9 +1,9 @@
 (ns lanterna.common
-  (:import com.googlecode.lanterna.input.Key)
+  (:import com.googlecode.lanterna.input.KeyType)
   (:require [lanterna.constants :as c]))
 
 
-(defn parse-key [^Key k]
+(defn parse-key [^KeyType k]
   (when k
     (let [kind (c/key-codes (.getKind k))]
       (if (= kind :normal)

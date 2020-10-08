@@ -1,12 +1,11 @@
-(defproject clojure-lanterna "0.9.7"
+(defproject babashka/clojure-lanterna "0.9.8-SNAPSHOT"
   :description "A Clojure wrapper around the Lanterna terminal output library."
-  :url "http://multimud.github.io/clojure-lanterna/"
+  :url "https://github.com/babashka/clojure-lanterna"
   :license {:name "LGPL"}
-  :dependencies [[org.clojure/clojure "1.4.0"]
-                 [com.googlecode.lanterna/lanterna "2.1.7"]]
+  :dependencies [[com.googlecode.lanterna/lanterna "3.0.3"]]
   :java-source-paths ["./java"]
-  ; :repositories {"sonatype-snapshots" "https://oss.sonatype.org/content/repositories/snapshots"}
+  :profiles {:dev {:dependencies [[org.clojure/clojure "1.10.2-alpha1"]]}}
   :repositories {"releases" {:url "https://clojars.org/repo"
-                             :username :env
-                             :password :env
+                             :username :env/babashka_nrepl_clojars_user
+                             :password :env/babashka_nrepl_clojars_pass
                              :sign-releases false}})

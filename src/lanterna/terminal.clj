@@ -41,10 +41,22 @@
   [^Terminal terminal listener]
   (.removeResizeListener terminal listener))
 
-(defn text-terminal []
-  (if (windows?)
-    (new CygwinTerminal System/in System/out (java.nio.charset.Charset/forName "UTF8"))
-    (new UnixTerminal System/in System/out (java.nio.charset.Charset/forName "UTF8"))))
+(defn get-terminal
+  ([] (get-terminal :auto {}))
+  ([kind] (get-terminal kind {}))
+  ([kind _opts #_{:as opts
+                  :keys [cols rows charset resize-listener]
+                  :or {cols 80
+                       rows 24
+                       charset :utf-8
+                       resize-listener nil}}]
+   (let [in  System/in
+         out System/out]
+     (case kind
+       :auto
+       (if (windows?)
+         (new CygwinTerminal in out (java.nio.charset.Charset/forName "UTF8"))
+         (new UnixTerminal in out (java.nio.charset.Charset/forName "UTF8")))))))
 
 (defn start
   "Start the terminal.  Consider using in-terminal instead."

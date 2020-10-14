@@ -101,10 +101,9 @@
 
   "
   ([^Screen screen x y]
-   (.setCursorPosition screen x y))
+   (.setCursorPosition screen (TerminalPosition. x y)))
   ([^Screen screen [x y]]
-   (.setCursorPosition screen x y)))
-
+   (.setCursorPosition screen (TerminalPosition. x y))))
 
 (defn get-cursor
   "Return the cursor position as [col row]."

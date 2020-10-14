@@ -90,7 +90,7 @@
 (defn move-cursor
   "Move the cursor to a specific location on the screen."
   [^Terminal terminal x y]
-  (.moveCursor terminal x y))
+  (.setCursorPosition terminal x y))
 
 (defn put-character
   "Draw the character at the current cursor location.
@@ -110,7 +110,7 @@
 
 (defn put-string
   ([^Terminal terminal ^String s]
-   (let [position ^TerminalPosition (.getPosition terminal)]
+   (let [position ^TerminalPosition (.getCursorPosition terminal)]
      (put-string terminal s (.getColumn position) (.getRow position))))
   ([^Terminal terminal ^String s ^Integer column ^Integer row]
    (doall
@@ -139,15 +139,15 @@
 
 
 (defn set-fg-color [^Terminal terminal color]
-  (.applyForegroundColor terminal (c/colors color)))
+  (.setForegroundColor terminal (c/colors color)))
 
 (defn set-bg-color [^Terminal terminal color]
-  (.applyBackgroundColor terminal (c/colors color)))
+  (.setBackgroundColor terminal (c/colors color)))
 
 (defn set-style
   "Enter a style"
   [^Terminal terminal style]
-  (.applySGR terminal (into-array SGR [(c/styles style)])))
+  (.enableSGR terminal (into-array SGR [(c/styles style)])))
 
 (defn get-key
   "Get the next keypress from the user, or nil if none are buffered.

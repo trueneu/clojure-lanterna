@@ -5,11 +5,12 @@
 (set! *warn-on-reflection* true)
 
 (defn parse-key [^KeyStroke k]
-  (let [t (.getKeyType k)
-        kind (c/key-codes t)]
-    (if (identical? :character kind)
-      (.getCharacter k)
-      kind)))
+  (when k
+    (let [t (.getKeyType k)
+          kind (c/key-codes t)]
+      (if (identical? :character kind)
+        (.getCharacter k)
+        kind))))
 
 (defn block-on
   "Repeatedly apply func to args until a non-nil value is returned.

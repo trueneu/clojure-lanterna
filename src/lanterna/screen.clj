@@ -248,7 +248,7 @@
 
   "
   [^Screen screen]
-  (parse-key (.readInput screen)))
+  (parse-key (.pollInput screen)))
 
 (defn get-key-blocking
   "Get the next keypress from the user.

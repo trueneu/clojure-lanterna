@@ -30,13 +30,13 @@
   but you can use it to remove it later with remove-resize-listener.
 
   "
-  [^Screen screen listener-fn]
+  [^TerminalScreen screen listener-fn]
   (t/add-resize-listener (.getTerminal screen)
                          listener-fn))
 
 (defn remove-resize-listener
   "Remove a resize listener from the given screen."
-  [^Screen screen listener]
+  [^TerminalScreen screen listener]
   (t/remove-resize-listener (.getTerminal screen) listener))
 
 (defn start

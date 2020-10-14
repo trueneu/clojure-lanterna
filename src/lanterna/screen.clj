@@ -130,6 +130,7 @@
   (default #{})
 
   "
+  ;; TODO: this function needs to be brought up to date with lanterna 3
   ([^Screen screen x y s] (put-string screen x y s {}))
   ([^Screen screen x y ^String s {:as opts
                                   :keys [fg bg styles]

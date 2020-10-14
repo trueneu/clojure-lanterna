@@ -53,7 +53,7 @@
    (let [in  System/in
          out System/out]
      (case kind
-       :auto
+       (:auto :text) ;; TODO: we should do something different for :text
        (if (windows?)
          (new CygwinTerminal in out (java.nio.charset.Charset/forName "UTF8"))
          (new UnixTerminal in out (java.nio.charset.Charset/forName "UTF8")))))))

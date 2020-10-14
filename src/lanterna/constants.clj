@@ -4,6 +4,8 @@
            com.googlecode.lanterna.input.KeyType
            java.nio.charset.Charset))
 
+(set! *warn-on-reflection* true)
+
 (def charsets {:utf-8 (Charset/forName "UTF-8")})
 
 (def colors
@@ -24,7 +26,7 @@
    :blinking SGR/BLINK})
 
 (def key-codes
-  {;; KeyType/NormalKey :normal
+  {KeyType/Character :character
    KeyType/Escape :escape
    KeyType/Backspace :backspace
    KeyType/ArrowLeft :left

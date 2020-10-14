@@ -11,6 +11,8 @@
    [lanterna.common :refer [parse-key block-on]]
    [lanterna.constants :as c]))
 
+(set! *warn-on-reflection* true)
+
 (defn- windows? []
   (-> (System/getProperty "os.name" "")
       (.toLowerCase)
@@ -164,6 +166,7 @@
               returning nil
 
   "
-  ([^Terminal terminal] (get-key-blocking terminal {}))
+  ([^Terminal terminal]
+   (get-key-blocking terminal {}))
   ([^Terminal terminal {:keys [interval timeout] :as opts}]
-     (block-on get-key [terminal] opts)))
+   (block-on get-key [terminal] opts)))

@@ -138,8 +138,7 @@
   "
   ;; TODO: this function needs to be brought up to date with lanterna 3
   ([^Screen screen x y s] (put-string screen x y s {}))
-  ([^Screen screen col row ^String s {:as opts
-                                      :keys [fg bg styles]
+  ([^Screen screen col row ^String s {:keys [fg bg styles]
                                       :or {fg :default
                                            bg :default
                                            styles #{}}}]
@@ -153,7 +152,6 @@
                (let [col (:col acc)
                      row (:row acc)
                      tc (TextCharacter. c fg bg styles)]
-                 (.setCursorPosition screen (TerminalPosition. col row))
                  (.setCharacter screen col row tc)
                  (update acc :col inc)))
              {:col col :row row}

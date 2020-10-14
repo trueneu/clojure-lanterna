@@ -17,7 +17,7 @@
     <url>https://github.com/babashka/clojure-lanterna</url>
     <connection>scm:git:git://github.com/babashka/clojure-lanterna.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/babashka/clojure-lanterna.git</developerConnection>
-    <tag>a4f363532441a5aaba37b37d2bc345f224268695</tag>
+    <tag>f6aaceb5c1e15a3bdbef3274b5cc74b645d38d6e</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>

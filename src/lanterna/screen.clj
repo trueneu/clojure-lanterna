@@ -1,12 +1,18 @@
 (ns lanterna.screen
   (:import
    com.googlecode.lanterna.screen.Screen
+   com.googlecode.lanterna.TerminalPosition
+   com.googlecode.lanterna.SGR
    com.googlecode.lanterna.terminal.Terminal
+   com.googlecode.lanterna.TextCharacter
+   com.googlecode.lanterna.TextColor
    com.googlecode.lanterna.screen.TerminalScreen)
   (:require
    [lanterna.common :refer [parse-key block-on]]
    [lanterna.constants :as c]
    [lanterna.terminal :as t]))
+
+(set! *warn-on-reflection* true)
 
 (defn- enumerate [s]
   (map vector (iterate inc 0) s))
@@ -132,17 +138,27 @@
   "
   ;; TODO: this function needs to be brought up to date with lanterna 3
   ([^Screen screen x y s] (put-string screen x y s {}))
-  ([^Screen screen x y ^String s {:as opts
-                                  :keys [fg bg styles]
-                                  :or {fg :default
-                                       bg :default
-                                       styles #{}}}]
-   (let [styles ^clojure.lang.PersistentHashSet (set (map c/styles styles))
-         x (int x)
-         y (int y)
-         fg ^com.googlecode.lanterna.terminal.Terminal$Color (c/colors fg)
-         bg ^com.googlecode.lanterna.terminal.Terminal$Color (c/colors bg)]
-     (.putString screen x y s fg bg styles))))
+  ([^Screen screen col row ^String s {:as opts
+                                      :keys [fg bg styles]
+                                      :or {fg :default
+                                           bg :default
+                                           styles #{}}}]
+   (let [styles ^"[Lcom.googlecode.lanterna.SGR;"
+         (into-array SGR (map c/styles styles))
+         col (int col)
+         row (int row)
+         fg ^TextColor (c/colors fg)
+         bg ^TextColor (c/colors bg)]
+     (reduce (fn [acc ^java.lang.Character c]
+               (let [col (:col acc)
+                     row (:row acc)
+                     tc (TextCharacter. c fg bg styles)]
+                 (.setCursorPosition screen (TerminalPosition. col row))
+                 (.setCharacter screen col row tc)
+                 (update acc :col inc)))
+             {:col col :row row}
+             s)
+     nil)))
 
 (defn put-sheet
   "EXPERIMENTAL!  Turn back now!

@@ -160,7 +160,7 @@
 
   "
   [^Terminal terminal]
-  (parse-key (.readInput terminal)))
+  (parse-key (.pollInput terminal)))
 
 (defn get-key-blocking
   "Get the next keypress from the user.

@@ -2,7 +2,8 @@
   (:import com.googlecode.lanterna.SGR
            com.googlecode.lanterna.TextColor$ANSI
            com.googlecode.lanterna.input.KeyType
-           java.nio.charset.Charset))
+           java.nio.charset.Charset
+           com.googlecode.lanterna.terminal.swing.TerminalEmulatorPalette))
 
 (set! *warn-on-reflection* true)
 
@@ -44,6 +45,14 @@
    KeyType/Enter :enter
    KeyType/Unknown :unknown
    KeyType/CursorLocation :cursor-location})
+
+(def palettes
+  {:gnome      TerminalEmulatorPalette/GNOME_TERMINAL
+   :vga        TerminalEmulatorPalette/STANDARD_VGA
+   :windows-xp TerminalEmulatorPalette/WINDOWS_XP_COMMAND_PROMPT
+   :mac-os-x   TerminalEmulatorPalette/MAC_OS_X_TERMINAL_APP
+   :xterm      TerminalEmulatorPalette/XTERM
+   :putty      TerminalEmulatorPalette/PUTTY})
 
 (def sgr
   {:bold com.googlecode.lanterna.SGR/BOLD

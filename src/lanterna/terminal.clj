@@ -1,12 +1,18 @@
 (ns lanterna.terminal
   (:refer-clojure :exclude [flush])
   (:import
-   com.googlecode.lanterna.TerminalPosition
-   com.googlecode.lanterna.SGR
-   com.googlecode.lanterna.terminal.Terminal
-   com.googlecode.lanterna.terminal.TerminalResizeListener
-   com.googlecode.lanterna.terminal.ansi.UnixTerminal
-   com.googlecode.lanterna.terminal.ansi.CygwinTerminal)
+    com.googlecode.lanterna.TerminalPosition
+    com.googlecode.lanterna.SGR
+    com.googlecode.lanterna.terminal.Terminal
+    com.googlecode.lanterna.TerminalSize
+    com.googlecode.lanterna.terminal.TerminalResizeListener
+    com.googlecode.lanterna.terminal.ansi.UnixTerminal
+    com.googlecode.lanterna.terminal.ansi.CygwinTerminal
+    com.googlecode.lanterna.terminal.swing.SwingTerminal
+    (com.googlecode.lanterna.terminal.swing AWTTerminalFontConfiguration$BoldMode SwingTerminalFontConfiguration TerminalEmulatorColorConfiguration TerminalEmulatorDeviceConfiguration)
+    (java.awt Font GraphicsEnvironment)
+    (java.nio.charset Charset))
+
   (:require
    [lanterna.common :refer [parse-key block-on]]
    [lanterna.constants :as c]))
@@ -41,22 +47,52 @@
   [^Terminal terminal listener]
   (.removeResizeListener terminal listener))
 
+(defn get-available-fonts []
+  (set (.getAvailableFontFamilyNames
+         (GraphicsEnvironment/getLocalGraphicsEnvironment))))
+
+(defn- get-font-name [font]
+  (let [fonts (if (coll? font) font [font])
+        fonts (concat fonts ["Monospaced"])
+        available (get-available-fonts)]
+    (first (filter available fonts))))
+
+(defn- get-swing-terminal
+  [cols rows
+   {:as opts
+    :keys [font font-size palette]
+    :or {font ["Menlo" "Consolas" "Monospaced"]
+         font-size 14
+         palette :xterm}}]
+  (let [font (get-font-name font)
+        ^TerminalSize sz (TerminalSize. cols rows)
+        ^SwingTerminalFontConfiguration font-config (SwingTerminalFontConfiguration. true AWTTerminalFontConfiguration$BoldMode/EVERYTHING
+                                                                                    (into-array ^Font [(new Font font Font/PLAIN font-size)
+                                                                                                       (new Font font Font/BOLD font-size)]))
+        ^TerminalEmulatorColorConfiguration color-config (TerminalEmulatorColorConfiguration/newInstance (c/palettes palette))
+        ^TerminalEmulatorDeviceConfiguration device-config (TerminalEmulatorDeviceConfiguration/getDefault)]
+    (new SwingTerminal sz device-config font-config color-config)))
+
+
+
+
 (defn get-terminal
   ([] (get-terminal :auto {}))
   ([kind] (get-terminal kind {}))
-  ([kind _opts #_{:as opts
-                  :keys [cols rows charset resize-listener]
-                  :or {cols 80
-                       rows 24
-                       charset :utf-8
-                       resize-listener nil}}]
+  ([kind {:as opts
+          :keys [cols rows charset resize-listener]
+          :or {cols 80
+               rows 24
+               charset :utf-8
+               resize-listener nil}}]
    (let [in  System/in
          out System/out]
      (case kind
        (:auto :text) ;; TODO: we should do something different for :text
        (if (windows?)
-         (new CygwinTerminal in out (java.nio.charset.Charset/forName "UTF8"))
-         (new UnixTerminal in out (java.nio.charset.Charset/forName "UTF8")))))))
+         (new CygwinTerminal in out (Charset/forName "UTF8"))
+         (new UnixTerminal in out (Charset/forName "UTF8")))
+       :swing  (get-swing-terminal cols rows opts)))))
 
 (defn start
   "Start the terminal.  Consider using in-terminal instead."
